@@ -7,7 +7,28 @@ published: false
 ---
 
 C言語でTCP通信をするにはシステムコールを使用します。
+主に、listen, connect, accept, send, recv, close関数を使用します。
+send, recvの代わりにwrite, readを使用してソケットからデータを呼んでもよいです。
+TCPはコネクション指向性通信のため、最初にソケットを作って、
 
+```mermaid
+sequenceDiagram
+    participant server as サーバー
+    participant client as クライアント
+
+    Note over server: listen
+    Note over client: connect
+    client ->> server: 接続
+    Note over server: accept
+
+    loop データのやり取り
+        client -> server: send, recv
+    end
+
+    Note over client: close
+    Note over server: close
+
+```
 
 # サーバー
 
