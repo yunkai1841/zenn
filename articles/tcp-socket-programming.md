@@ -2,14 +2,15 @@
 title: "C言語でTCP通信をする"
 emoji: "🎶"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["c", "socket", "tcp", "unix"]
-published: false
+topics: ["c", "socket", "unix"]
+published: true
 ---
 
 C言語でTCP通信をするにはシステムコールを使用します。
 主に、listen, connect, accept, send, recv, close関数を使用します。
 send, recvの代わりにwrite, readを使用してソケットからデータを呼んでもよいです。
-TCPはコネクション指向性通信のため、最初にソケットを作って、
+TCPはコネクション指向性通信のため、最初に接続を確立し、通信が終わったら、ソケットを閉じる必要があります。
+これが通信の流れです。
 
 ```mermaid
 sequenceDiagram
