@@ -32,6 +32,10 @@ sequenceDiagram
 ```
 
 # サーバー
+```bash
+gcc -o server server.c
+./server
+```
 
 ```c
 #include <netinet/in.h>
@@ -102,6 +106,11 @@ int main() {
 ```
 
 ## クライアント
+
+```bash
+gcc -o client client.c
+./client localhost "Hello, world!"
+```
 
 ```c
 #include <netdb.h>
