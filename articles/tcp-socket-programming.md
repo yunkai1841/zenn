@@ -6,11 +6,8 @@ topics: ["c", "socket", "unix"]
 published: true
 ---
 
-C言語でTCP通信をするにはシステムコールを使用します。
-主に、listen, connect, accept, send, recv, close関数を使用します。
-send, recvの代わりにwrite, readを使用してソケットからデータを呼んでもよいです。
-TCPはコネクション指向性通信のため、最初に接続を確立し、通信が終わったら、ソケットを閉じる必要があります。
-これが通信の流れです。
+C言語でTCP通信をするにはシステムコールを使用します。主に、listen, connect, accept, send, recv, close関数を使用します。send, recvの代わりにwrite, readを使用してソケットからデータを呼んでもよいです。
+また、TCPはコネクション指向性通信のため、最初に接続を確立し、通信が終わったら、ソケットを閉じる必要があります。下図が通信の流れです。
 
 ```mermaid
 sequenceDiagram
@@ -31,7 +28,7 @@ sequenceDiagram
 
 ```
 
-# サーバー
+# サーバープログラム
 ```bash
 gcc -o server server.c
 ./server
@@ -105,7 +102,7 @@ int main() {
 }
 ```
 
-## クライアント
+## クライアントプログラム
 
 ```bash
 gcc -o client client.c
@@ -185,4 +182,92 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+```
+
+# 各関数の説明
+参考：
+https://qiita.com/Michinosuke/items/0778a5344bdf81488114
+https://qiita.com/0xfffffff7/items/6ffb317df8345070d0b5
+
+## socket
+ソケットを作成します。
+
+TCPの場合は、`domain=AF_INET`、`type=SOCK_STREAM`、`protocol=0`を指定します。
+UDPの場合は、`domain=AF_INET`、`type=SOCK_DGRAM`、`protocol=0`を指定します。
+
+```c
+int socket(int domain, int type, int protocol);
+```
+
+## bind
+ソケットにアドレスを割り当てます。
+
+addrは、ソケットアドレス構造体のポインタです。
+
+```c
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+
+## listen
+ソケットを接続待ち状態にします。
+
+backlogは、接続待ちの最大数です。
+
+```c
+int listen(int sockfd, int backlog);
+```
+
+## accept
+接続待ち状態のソケットから接続を受け付けます。
+
+addrは、接続元のソケットアドレス構造体が書き込まれるポインタです。
+
+```c
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+```
+
+## connect
+ソケットに接続します。
+
+addrは、接続先のソケットアドレス構造体のポインタです。クライアントプログラムでは、サーバーのアドレスを指定します。
+
+```c
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+
+## send
+ソケットにデータを送信します。
+
+bufに送信したいデータを格納して、lenにデータの長さを指定します。この関数を呼べば、bufのデータがソケットに書き込まれます。
+flagsは、送信オプションを指定します。0を指定すると、通常の送信になります。
+
+注意：sendをloopで回して、負荷をかけすぎると、送信失敗が起きますので、注意が必要です。[参考](https://blogs.itmedia.co.jp/komata/2012/12/tcpipsend-4c3a.html) 
+
+```c
+ssize_t send(int sockfd, const void *buf, size_t len, int flags);
+```
+
+## recv
+ソケットからデータを受信します。
+
+bufに受信したデータが格納されます。lenには、bufの長さを指定します。flagsは、受信オプションを指定します。0を指定すると、通常の受信になります。
+ただし、文字列を受信したいとき、recvはbufの最後に`\0`を入れてくれないので、事前にbufを初期化しておくか、`buf[len-1] = '\0';`を行う必要があります。
+
+```c
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+```
+
+## gethostbyname
+ホスト名からホスト情報を取得します。
+
+```c
+struct hostent *gethostbyname(const char *name);
+```
+
+## htons
+ホストバイトオーダーからネットワークバイトオーダーに変換します。
+バイトオーダーは環境によって異なります。例えば、Intel x86 CPUはリトルエンディアンです。
+
+```c
+uint16_t htons(uint16_t hostshort);
 ```
