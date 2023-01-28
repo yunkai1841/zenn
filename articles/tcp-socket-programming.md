@@ -102,7 +102,7 @@ int main() {
 }
 ```
 
-## クライアントプログラム
+# クライアントプログラム
 
 ```bash
 gcc -o client client.c
