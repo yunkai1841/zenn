@@ -37,7 +37,7 @@ gcc -o server server.c
 ./server
 ```
 
-```c
+```c:server.c
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,7 +112,7 @@ gcc -o client client.c
 ./client localhost "Hello, world!"
 ```
 
-```c
+```c:client.c
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdio.h>
