@@ -34,18 +34,17 @@ sequenceDiagram
 # サーバー
 
 ```c
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define PORT 8000
 
-int main()
-{
+int main() {
     int sockfd, new_sockfd;
     socklen_t clilen;
     char buffer[256];
@@ -60,11 +59,11 @@ int main()
     }
 
     // ソケットにアドレスを割り当てる
-    bzero((char *) &serv_addr, sizeof(serv_addr));
+    memset((char *)&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(PORT);
-    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR on binding");
         exit(1);
     }
@@ -72,15 +71,15 @@ int main()
     // クライアントからの接続を待つ
     listen(sockfd, 5);
     clilen = sizeof(cli_addr);
-    new_sockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+    new_sockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
     if (new_sockfd < 0) {
         perror("ERROR on accept");
         exit(1);
     }
 
     // データを受信する
-    bzero(buffer, 256);
-    n = read(new_sockfd, buffer, 255);
+    memset(buffer, 0, 256);
+    n = recv(new_sockfd, buffer, 255, 0);
     if (n < 0) {
         perror("ERROR reading from socket");
         exit(1);
@@ -89,7 +88,7 @@ int main()
     printf("Message from client: %s\n", buffer);
 
     // データを送信する
-    n = write(new_sockfd, "I got your message", 18);
+    n = send(new_sockfd, "I got your message", 18, 0);
     if (n < 0) {
         perror("ERROR writing to socket");
         exit(1);
@@ -105,19 +104,18 @@ int main()
 ## クライアント
 
 ```c
+#include <netdb.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define PORT 8000
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int sockfd, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
@@ -143,29 +141,30 @@ int main(int argc, char *argv[])
     }
 
     // 接続先アドレスを設定する
-    bzero((char *) &serv_addr, sizeof(serv_addr));
+    memset((char *)&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+    memcpy((char *)&serv_addr.sin_addr.s_addr, (char *)server->h_addr,
+           server->h_length);
     serv_addr.sin_port = htons(PORT);
 
     // サーバーに接続する
-    if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+    if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR connecting");
         exit(1);
     }
 
     // データを送信する
-    bzero(buffer, 256);
+    memset(buffer, 0, 256);
     strcpy(buffer, argv[2]);
-    n = write(sockfd, buffer, strlen(buffer));
+    n = send(sockfd, buffer, strlen(buffer), 0);
     if (n < 0) {
         perror("ERROR writing to socket");
         exit(1);
     }
 
     // データを受信する
-    bzero(buffer, 256);
-    n = read(sockfd, buffer, 255);
+    memset(buffer, 0, 256);
+    n = recv(sockfd, buffer, 255, 0);
     if (n < 0) {
         perror("ERROR reading from socket");
         exit(1);
