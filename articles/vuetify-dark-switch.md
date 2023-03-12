@@ -70,5 +70,5 @@ const changeTheme = () => {
 ```
 
 # 参考
-https://vuetifyjs.com/en/features/theme/
-https://vuetifyjs.com/en/api/use-theme/
+- https://vuetifyjs.com/en/features/theme/
+- https://vuetifyjs.com/en/api/use-theme/
