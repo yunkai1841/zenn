@@ -1,5 +1,5 @@
 ---
-title: "Vue3初心者がVue3 + Vuetify3で電卓を作ってみた"
+title: "Vue3 + Vuetify3で電卓を作ってみた"
 emoji: "🧮"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["vuetify", "vue", "javascript"]
