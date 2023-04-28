@@ -1,6 +1,6 @@
 ---
 title: "vscodeでFORTRANを快適に開発したい"
-emoji: "👏"
+emoji: "🌝"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: ["fortran", "vscode"]
 published: true
